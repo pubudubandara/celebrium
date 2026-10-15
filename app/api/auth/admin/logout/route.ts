@@ -10,5 +10,6 @@ export async function POST() {
     secure: process.env.NODE_ENV === "production",
     path: "/",
   });
+  response.headers.set("Cache-Control", "no-store");
   return response;
 }

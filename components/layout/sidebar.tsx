@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -50,7 +50,6 @@ const ownerNav: NavItem[] = [
 
 // ── Super Admin Sidebar ───────────────────────────────────────────────────────
 export function SuperAdminSidebar() {
-  const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [adminName, setAdminName] = React.useState("Super Admin");
@@ -128,13 +127,18 @@ export function SuperAdminSidebar() {
             </p>
           </div>
           <button
-            onClick={async () => {
-              await fetch("/api/auth/admin/logout", { method: "POST" });
-              router.replace("/super-admin/login");
-            }}
-            className="p-1.5 rounded-md transition-colors hover:opacity-70"
-            title="Sign out"
-          >
+              onClick={async () => {
+                await fetch("/api/auth/admin/logout", {
+                  method: "POST",
+                  cache: "no-store",
+                });
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.replace("/super-admin/login");
+              }}
+              className="p-1.5 rounded-md transition-colors hover:opacity-70"
+              title="Sign out"
+            >
             <LogOut size={14} style={{ color: "var(--text-muted)" }} />
           </button>
         </div>

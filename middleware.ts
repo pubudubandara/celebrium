@@ -3,7 +3,9 @@ import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === "/super-admin/login") {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    return response;
   }
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
@@ -13,7 +15,9 @@ export async function middleware(request: NextRequest) {
 
   try {
     await verifySessionToken(token);
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    return response;
   } catch {
     const response = NextResponse.redirect(new URL("/super-admin/login", request.url));
     response.cookies.delete(SESSION_COOKIE);
