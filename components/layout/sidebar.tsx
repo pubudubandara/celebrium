@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -50,8 +50,21 @@ const ownerNav: NavItem[] = [
 
 // ── Super Admin Sidebar ───────────────────────────────────────────────────────
 export function SuperAdminSidebar() {
+  const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [adminName, setAdminName] = React.useState("Super Admin");
+
+  React.useEffect(() => {
+    fetch("/api/auth/admin/me")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((user) => {
+        if (user?.fullName) setAdminName(user.fullName);
+      })
+      .catch(() => {
+        // Middleware still protects the route if the identity request fails.
+      });
+  }, []);
 
   const SidebarContent = () => (
     <>
@@ -107,23 +120,23 @@ export function SuperAdminSidebar() {
             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
             style={{ background: "var(--accent)", color: "white" }}
           >
-            AM
+            {adminName.slice(0, 2).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold truncate" style={{ color: "var(--text-primary)" }}>
-              Alex Morgan
-            </p>
-            <p className="text-[10px] truncate" style={{ color: "var(--text-muted)" }}>
-              admin@celebrium.app
+              {adminName}
             </p>
           </div>
-          <Link
-            href="/super-admin/login"
+          <button
+            onClick={async () => {
+              await fetch("/api/auth/admin/logout", { method: "POST" });
+              router.replace("/super-admin/login");
+            }}
             className="p-1.5 rounded-md transition-colors hover:opacity-70"
             title="Sign out"
           >
             <LogOut size={14} style={{ color: "var(--text-muted)" }} />
-          </Link>
+          </button>
         </div>
       </div>
     </>

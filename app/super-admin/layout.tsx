@@ -1,10 +1,19 @@
+"use client";
+
 import { SuperAdminSidebar, AdminHeader } from "@/components/layout/sidebar";
+import { usePathname } from "next/navigation";
 
 export default function SuperAdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  if (pathname === "/super-admin/login") {
+    return children;
+  }
+
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: "var(--bg-primary)" }}>
       <SuperAdminSidebar />
